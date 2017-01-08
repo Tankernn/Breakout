@@ -76,7 +76,6 @@ public class Breakout extends TankernnGame {
 
 		pad.update();
 		ball.update();
-
 	}
 
 	public void render() {
