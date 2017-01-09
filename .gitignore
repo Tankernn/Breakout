@@ -1,4 +1,12 @@
-/bin/
-/target/
-/res/
-res
+.settings/
+.classpath
+.project
+
+tmp/
+*.tmp
+*.bak
+*.swp
+
+bin/
+target/
+.DS_Store
