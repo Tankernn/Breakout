@@ -19,7 +19,7 @@ public class Ball extends Entity2D {
 	private int unlockKey;
 
 	public Ball(Texture texture, Pad p1, List<Block> blocks, int unlockKey) {
-		super(texture, new Vector2f(0, 0), new Vector2f(0.03f, 0.03f));
+		super(texture, new Vector2f(0, 0), new Vector2f(0.01f, 0.01f));
 		this.pad = p1;
 		this.blocks = blocks;
 		locked = true;

@@ -3,7 +3,9 @@ package eu.tankernn.breakout;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,7 @@ import eu.tankernn.gameEngine.TankernnGame;
 import eu.tankernn.gameEngine.loader.textures.Texture;
 import eu.tankernn.gameEngine.renderEngine.gui.GuiRenderer;
 import eu.tankernn.gameEngine.renderEngine.gui.GuiTexture;
+import eu.tankernn.gameEngine.util.InternalFile;
 
 public class Breakout extends TankernnGame {
 
@@ -29,9 +32,10 @@ public class Breakout extends TankernnGame {
 	private Texture steel;
 
 	private List<Block> blocks = new ArrayList<Block>();
-
 	private Ball ball;
 	private Pad pad;
+
+	private int mapIndex = 1;
 
 	public Breakout() {
 		super(GAME_NAME);
@@ -55,24 +59,21 @@ public class Breakout extends TankernnGame {
 			return;
 		}
 
-		// Setup blocks
-		// TODO Load custom maps from files
-		int i = 0;
-		for (int x = 0; x < Block.COLUMNS; x++)
-			for (int y = 0; y < Block.ROWS; y++) {
-				blocks.add(new Block(colors[i++], x, y));
-				i %= colors.length;
-			}
-
 		// Ball + pad
 
 		pad = new Pad(white, new Vector2f(0, -0.8f), Keyboard.KEY_LEFT, Keyboard.KEY_RIGHT);
 		ball = new Ball(white, pad, blocks, Keyboard.KEY_SPACE);
 
+		// Setup blocks
+		nextMap();
+
 	}
 
 	public void update() {
 		blocks.removeIf(b -> !b.isAlive());
+
+		if (blocks.isEmpty())
+			nextMap();
 
 		pad.update();
 		ball.update();
@@ -93,6 +94,39 @@ public class Breakout extends TankernnGame {
 		renderer.render(entities);
 
 		super.render();
+	}
+
+	private void nextMap() {
+		try {
+			loadMap(new InternalFile("/maps/" + mapIndex++ + ".map"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void loadMap(InternalFile file) throws IOException {
+		blocks.clear();
+		BufferedReader read = file.getReader();
+		int colorCount = 0;
+		for (int y = Block.ROWS; 0 < y; y--) {
+			String row = read.readLine();
+			for (int x = 0; x < Block.COLUMNS; x++) {
+				Block blk;
+				switch (row.charAt(x)) {
+				case 'X':
+					blk = new Block(colors[colorCount++], x, y);
+					colorCount %= colors.length;
+					break;
+				case 'S':
+					blk = new Block(steel, x, y).setHealth(2);
+					break;
+				case '0':
+				default:
+					continue;
+				}
+				blocks.add(blk);
+			}
+		}
 	}
 
 	public void cleanUp() {

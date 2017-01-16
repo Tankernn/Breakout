@@ -13,7 +13,7 @@ public class Pad extends Entity2D {
 	private int leftKey, rightKey;
 
 	public Pad(Texture texture, Vector2f position, int leftKey, int rightKey) {
-		super(texture, position, new Vector2f(0.3f, 0.02f));
+		super(texture, position, new Vector2f(0.15f, 0.02f));
 		this.leftKey = leftKey;
 		this.rightKey = rightKey;
 	}
